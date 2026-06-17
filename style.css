@@ -1,0 +1,24 @@
+/* ==========================================================================
+   DAILY DRIVE WORKSPACE - SIMPLIFIED BASIC CSS SPECIFICATION
+   ========================================================================== */
+
+/* 1.  Reset & Body Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: aliceblue;
+    color: black;
+    line-height: 1.5;
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    body {
+        padding: 2rem;
+    }
+}
