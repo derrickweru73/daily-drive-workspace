@@ -51,7 +51,30 @@
                 </form>
             </div>
 
-            
+            <!-- Right Dashboard Tasks Section -->
+            <div class="dashboard-panel">
+                <div class="filter-bar">
+                    <div class="status-tabs">
+                        <button data-status-filter="all" class="tab-btn active">All</button>
+                        <button data-status-filter="pending" class="tab-btn">Pending</button>
+                        <button data-status-filter="completed" class="tab-btn">Completed</button>
+                    </div>
+                    <select id="filter-category-select" class="filter-select">
+                        <option value="all">All Categories</option>
+                        <option value="Work">Work</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Study">Study</option>
+                        <option value="Health">Health</option>
+                        <option value="Finance">Finance</option>
+                    </select>
+                </div>
+
+                <!-- Live Dynamic Task Items Target Container -->
+                <ul id="task-list" class="task-list"></ul>
+            </div>
+        </section>
+    </main>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
