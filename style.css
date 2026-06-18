@@ -133,3 +133,64 @@ h4 {
     height: auto;
     margin-bottom: 1.5rem;
 }
+
+@media (min-width: 768px) {
+
+    /* Side-by-side layout using modern flex for safety, but keeping logic flat */
+    .workspace-layout {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .workspace-layout .panel:first-child {
+        flex: 1;
+    }
+
+    .workspace-layout .dashboard-panel {
+        flex: 2;
+    }
+}
+
+.panel-title {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+    color: black;
+}
+
+.task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: gray;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid lightgray;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    background-color: white;
+    color: black;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: blue;
+    box-shadow: 0 0 0 2px rgba(0, 0, 255, 0.2);
+}
