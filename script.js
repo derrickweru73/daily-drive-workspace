@@ -207,4 +207,3 @@ class WorkspaceManager {
 document.addEventListener('DOMContentLoaded', () => {
     new WorkspaceManager();
 });
- 
