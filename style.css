@@ -103,3 +103,33 @@ h4 {
     color: black;
 }
 
+.progress-track {
+    width: 7rem;
+    background-color: lightgray;
+    height: 0.5rem;
+    border-radius: 9999px;
+    margin-top: 0.25rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: green;
+    height: 100%;
+    width: 0%;
+    transition: width 0.5s ease-in-out;
+}
+
+/* 5. Split Panels Layout (Replaced Grid with Classic Block Layout) */
+.workspace-layout {
+    display: block;
+}
+
+.panel {
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    height: auto;
+    margin-bottom: 1.5rem;
+}
