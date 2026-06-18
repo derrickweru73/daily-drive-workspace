@@ -22,3 +22,19 @@ body {
         padding: 2rem;
     }
 }
+h1,
+h2,
+h3,
+h4 {
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+/* 2. Container Layout  */
+.app-container {
+    max-width: 56rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
