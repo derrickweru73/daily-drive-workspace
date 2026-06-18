@@ -194,7 +194,7 @@ class WorkspaceManager {
         });
 
         const { percentage, total } = this.calculateMetrics();
-        // If the total tasks count label element is found on the page
+        // If the total tasks count label element is found on  page
         if (this.taskCountText) this.taskCountText.textContent = `${total} Total Tasks`; // Update text with the new total number
         // If the percentage completion text element is found on the page
         if (this.completionRateText) this.completionRateText.textContent = `${percentage}%`; // Update text with the new percentage number
@@ -207,3 +207,4 @@ class WorkspaceManager {
 document.addEventListener('DOMContentLoaded', () => {
     new WorkspaceManager();
 });
+ 
