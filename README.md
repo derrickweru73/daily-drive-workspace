@@ -1,5 +1,9 @@
 # Daily Drive Workspace
 
+## Quick Summary for beginers
+If you are new to this project, here is the simple version: Daily Drive Workspace is a digital to-do list web page. It lets you type in tasks, pick a category for  (like Work or Study), check them off when done, and watch a green progress bar grow to 100% as you complete your goals. It automatically saves your list so your tasks don't disappear when you close or refresh your browser tab.
+
+---
 ## Project Overview
 
 Daily Drive Workspace is a simple, easy-to-use task tracker website. The main goal of this project is to help people organize their day-to-day life without getting overwhelmed. 
