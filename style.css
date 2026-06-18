@@ -92,3 +92,14 @@ h4 {
     font-weight: 700;
     font-size: 1.125rem;
 }
+
+.progress-details {
+    flex-grow: 1;
+}
+
+.task-counter {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: black;
+}
+
