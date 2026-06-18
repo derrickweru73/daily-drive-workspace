@@ -194,3 +194,24 @@ h4 {
     border-color: blue;
     box-shadow: 0 0 0 2px rgba(0, 0, 255, 0.2);
 }
+
+/* 6. Buttons  Setup */
+.btn {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: none;
+}
+
+.btn-primary {
+    background-color: blue;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: darkblue;
+}
