@@ -1,0 +1,24 @@
+{
+  "name": "daily-drive-workspace",
+  "version": "1.0.0",
+  "description": "If you are new to this project, here is the simple version: Daily Drive Workspace is a digital to-do list web page. It lets you type in tasks, pick a category for  (like Work or Study), check them off when done, and watch a green progress bar grow to 100% as you complete your goals. It automatically saves your list so your tasks don't disappear when you close or refresh your browser tab.",
+  "main": "auth.js",
+   "scripts": {
+  "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derrickweru73/daily-drive-workspace.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/derrickweru73/daily-drive-workspace/issues"
+  },
+  "homepage": "https://github.com/derrickweru73/daily-drive-workspace#readme",
+  "devDependencies": {
+    "jest": "^30.4.2"
+  }
+}
