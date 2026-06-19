@@ -56,7 +56,11 @@ export class WorkspaceManager {
     if (user.role === 'Manager') {
       return this.tasks;
     }
-    return this.tasks.filter(task => task.assignedTo === user.id);
+    // Match by either employee ID or username to prevent dropdown mismatch bugs
+    return this.tasks.filter(task => 
+      task.assignedTo === user.id || 
+      (task.assignedTo && task.assignedTo.toLowerCase() === user.username.toLowerCase())
+    );
   }
 
   calculateProgress(userId = null, isManager = false) {

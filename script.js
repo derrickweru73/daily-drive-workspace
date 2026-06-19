@@ -79,16 +79,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function setupFormAvailability(user) {
-    if (user.role === USER_ROLES.EMPLOYEE) {
-      formCard.classList.add('hidden');
-    } else {
-      formCard.classList.remove('hidden');
-      taskAssignment.innerHTML = AuthManager.getAllEmployees().map(emp => 
-        `<option value="${emp.id}">${emp.name}</option>`
-      ).join('');
-    }
+   // script.js - Update this specific function inside your DOMContentLoaded event loop
+
+function setupFormAvailability(user) {
+  if (user.role === USER_ROLES.EMPLOYEE) {
+    formCard.classList.add('hidden');
+  } else {
+    formCard.classList.remove('hidden');
+    
+    // FIX: Use emp.username as the option value so it links perfectly to the employee account session
+    taskAssignment.innerHTML = AuthManager.getAllEmployees().map(emp => 
+      `<option value="${emp.username}">${emp.name} (@${emp.username})</option>`
+    ).join('');
   }
+}
 
   // --- Auth & Account Creation Handlers ---
   loginForm.addEventListener('submit', (e) => {
