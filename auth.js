@@ -5,16 +5,27 @@ export const USER_ROLES = {
   EMPLOYEE: 'Employee'
 };
 
-// Hardcoded users for local enterprise simulation
-const USERS_DATABASE = [
+// Default system baseline accounts
+const DEFAULT_USERS = [
   { id: 'u1', username: 'admin', password: 'password123', name: 'Derrick Weru', role: USER_ROLES.MANAGER },
   { id: 'u2', username: 'john_dev', password: 'password123', name: 'John Doe', role: USER_ROLES.EMPLOYEE },
   { id: 'u3', username: 'jane_ux', password: 'password123', name: 'Jane Smith', role: USER_ROLES.EMPLOYEE }
 ];
 
 export class AuthManager {
+  // Fetch existing users from local memory or load baseline users
+  static getUsersDatabase() {
+    const storedUsers = localStorage.getItem('dd_users_database');
+    if (!storedUsers) {
+      localStorage.setItem('dd_users_database', JSON.stringify(DEFAULT_USERS));
+      return DEFAULT_USERS;
+    }
+    return JSON.parse(storedUsers);
+  }
+
   static login(username, password) {
-    const user = USERS_DATABASE.find(
+    const db = this.getUsersDatabase();
+    const user = db.find(
       u => u.username.toLowerCase() === username.toLowerCase().trim() && u.password === password
     );
 
@@ -33,6 +44,32 @@ export class AuthManager {
     return sessionData;
   }
 
+  static register({ name, username, password, role = USER_ROLES.EMPLOYEE }) {
+    const db = this.getUsersDatabase();
+    
+    // Form verification rules
+    if (!name.trim() || !username.trim() || !password.trim()) {
+      throw new Error('All registration fields are required.');
+    }
+
+    const usernameExists = db.some(u => u.username.toLowerCase() === username.toLowerCase().trim());
+    if (usernameExists) {
+      throw new Error('Username is already taken.');
+    }
+
+    const newUser = {
+      id: `user_${Date.now()}`,
+      name: name.trim(),
+      username: username.toLowerCase().trim(),
+      password: password, // Simulated plain text for local storage workspace environment
+      role: role
+    };
+
+    const updatedDb = [...db, newUser];
+    localStorage.setItem('dd_users_database', JSON.stringify(updatedDb));
+    return newUser;
+  }
+
   static logout() {
     localStorage.removeItem('dd_workspace_session');
   }
@@ -47,6 +84,6 @@ export class AuthManager {
   }
 
   static getAllEmployees() {
-    return USERS_DATABASE.filter(user => user.role === USER_ROLES.EMPLOYEE);
+    return this.getUsersDatabase().filter(user => user.role === USER_ROLES.EMPLOYEE);
   }
 }
