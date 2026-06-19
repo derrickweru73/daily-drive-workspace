@@ -7,18 +7,27 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // App view layers
   const authScreen = document.getElementById('authScreen');
+  const loginCard = document.getElementById('loginCard');
+  const registerCard = document.getElementById('registerCard');
   const workspaceScreen = document.getElementById('workspaceScreen');
   
   // Forms & Inputs
   const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
   const taskForm = document.getElementById('taskForm');
   const taskIdField = document.getElementById('taskIdField');
   const taskTitle = document.getElementById('taskTitle');
   const taskCategory = document.getElementById('taskCategory');
   const taskAssignment = document.getElementById('taskAssignment');
   
+  // Interface Toggles
+  const goToRegister = document.getElementById('goToRegister');
+  const goToLogin = document.getElementById('goToLogin');
+  
   // Display nodes
   const authError = document.getElementById('authError');
+  const registerError = document.getElementById('registerError');
+  const registerSuccess = document.getElementById('registerSuccess');
   const titleError = document.getElementById('titleError');
   const userDisplay = document.getElementById('userDisplay');
   const roleDisplay = document.getElementById('roleDisplay');
@@ -27,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const taskList = document.getElementById('taskList');
   const formTitle = document.getElementById('formTitle');
   const submitTaskBtn = document.getElementById('submitTaskBtn');
-  const assignmentGroup = document.getElementById('assignmentGroup');
   const formCard = document.getElementById('formCard');
   
   // Dynamic filter contexts
@@ -36,6 +44,21 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let currentStatusFilter = 'All';
   let isEditingMode = false;
+
+  // --- Layout Screen Transitions ---
+  goToRegister.addEventListener('click', () => {
+    loginCard.classList.add('hidden');
+    registerCard.classList.remove('hidden');
+    registerForm.reset();
+    registerError.classList.add('hidden');
+  });
+
+  goToLogin.addEventListener('click', () => {
+    registerCard.classList.add('hidden');
+    loginCard.classList.remove('hidden');
+    loginForm.reset();
+    authError.classList.add('hidden');
+  });
 
   // --- Core Routing States ---
   function initSession() {
@@ -51,23 +74,23 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       authScreen.classList.remove('hidden');
       workspaceScreen.classList.add('hidden');
+      loginCard.classList.remove('hidden');
+      registerCard.classList.add('hidden');
     }
   }
 
   function setupFormAvailability(user) {
-    // Structural Rule: Employees cannot manually create tasks for themselves or change assignments
     if (user.role === USER_ROLES.EMPLOYEE) {
       formCard.classList.add('hidden');
     } else {
       formCard.classList.remove('hidden');
-      // Populate dropdown list with existing system personnel
       taskAssignment.innerHTML = AuthManager.getAllEmployees().map(emp => 
         `<option value="${emp.id}">${emp.name}</option>`
       ).join('');
     }
   }
 
-  // --- Auth Handlers ---
+  // --- Auth & Account Creation Handlers ---
   loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     authError.classList.add('hidden');
@@ -82,6 +105,34 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       authError.textContent = err.message;
       authError.classList.remove('hidden');
+    }
+  });
+
+  registerForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    registerError.classList.add('hidden');
+    registerSuccess.classList.add('hidden');
+
+    try {
+      AuthManager.register({
+        name: document.getElementById('regName').value,
+        username: document.getElementById('regUsername').value,
+        password: document.getElementById('regPassword').value,
+        role: document.getElementById('regRole').value
+      });
+
+      registerSuccess.classList.remove('hidden');
+      
+      // Delays briefly so user notices the success status indicator
+      setTimeout(() => {
+        registerCard.classList.add('hidden');
+        loginCard.classList.remove('hidden');
+        loginForm.reset();
+      }, 1000);
+
+    } catch (err) {
+      registerError.textContent = err.message;
+      registerError.classList.remove('hidden');
     }
   });
 
@@ -142,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentUser = AuthManager.getCurrentUser();
     if (!currentUser) return;
 
-    // Run high density functional filtration mapping structures
     const renderingStack = workspace.filterAndSortTasks({
       user: currentUser,
       category: filterCategory.value,
@@ -155,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const li = document.createElement('li');
       li.className = `task-item ${task.completed ? 'completed' : ''}`;
       
-      // Determine structural view controls depending on active account clearances
       const accessControlLinks = currentUser.role === USER_ROLES.MANAGER 
         ? `<div class="task-actions">
             <span class="action-edit" data-id="${task.id}">Edit</span>
@@ -167,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="task-left">
           <input type="checkbox" class="task-checkbox" data-id="${task.id}" ${task.completed ? 'checked' : ''}>
           <div>
-            <div class="task-text" style="font-weight:500;">${task.title}</div>
+            <div class="task-text">${task.title}</div>
             <div class="task-meta">
               <span class="category-tag">${task.category}</span>
             </div>
@@ -178,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
       taskList.appendChild(li);
     });
 
-    // Handle interactive dynamic calculations
     const score = workspace.calculateProgress(currentUser.id, currentUser.role === USER_ROLES.MANAGER);
     progressPercent.textContent = `${score}%`;
     progressBar.style.width = `${score}%`;
@@ -215,6 +263,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Run execution context initialization bootstrap loop
   initSession();
 });
