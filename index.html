@@ -1,80 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Drive Workspace</title>
-               <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Drive Workspace</title>
+  
+      
+  <!-- External CSS Decoupling -->
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <main class="app-container">
+
+  <div class="container">
+    
+    <!-- AUTHENTICATION FORM SCREEN -->
+    <div id="authScreen" class="auth-card">
+      <h2>Daily Drive Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" class="form-control" placeholder="e.g. admin or john_dev" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" class="form-control" value="password123" required>
+        </div>
+        <button type="submit" class="btn-submit">Sign In</button>
+        <div id="authError" class="error-msg hidden"></div>
+      </form>
+    </div>
+
+    <!-- MAIN APP INTERFACE SCREEN -->
+    <div id="workspaceScreen" class="hidden">
+      
+      <!-- Top Session Navbar -->
+      <div class="header-bar">
+        <div>
+          <h1>Daily Drive Workspace</h1>
+          <p>Welcome, <span id="userDisplay" class="user-badge"></span> (<span id="roleDisplay"></span>)</p>
+        </div>
+        <button id="logoutBtn" class="btn-logout">Logout</button>
+      </div>
+
+      <!-- Live Calculation Metrics Component -->
+      <div class="progress-container">
+        <div class="progress-label">
+          <span>Daily Completion Score</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+      </div>
+
+      <!-- Core Engine Layout Split Grid -->
+      <div class="workspace-grid">
         
-        <!-- Header & Metrics -->
-        <header class="app-header">
-            <div class="brand-group">
-                <h1 class="brand-title">Daily Drive Workspace</h1>
-                <p class="brand-subtitle">Track, organize, and crush your daily routines</p>
-            </div>
-            <div class="metrics-card">
-                <div class="completion-circle" id="completion-rate">0%</div>
-                <div class="progress-details">
-                    <h4 class="task-counter" id="task-count">0 Tasks</h4>
-                    <div class="progress-track">
-                        <div id="progress-fill" class="progress-bar"></div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Workspace Layout -->
-        <section class="workspace-layout">
-            <!-- Left Sidebar Form Panel -->
-            <div class="panel form-panel">
-                <h2 class="panel-title">Manage Workspace</h2>
-                <form id="task-form" class="task-form">
-                    <div class="form-group">
-                        <label class="form-label">Task Title</label>
-                        <input type="text" id="task-input" placeholder="What needs to be done?" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Category</label>
-                        <select id="category-select" class="form-select">
-                            <option value="Work">Work</option>
-                            <option value="Personal">Personal</option>
-                            <option value="Study">Study</option>
-                            <option value="Health">Health</option>
-                            <option value="Finance">Finance</option>
-                        </select>
-                    </div>
-                    <button type="submit" id="form-submit-btn" class="btn btn-primary">Add Task</button>
-                </form>
+        <!-- Input Form Section (Managed via role accessibility parameters) -->
+        <div class="card" id="formCard">
+          <h3 id="formTitle" class="form-group">Create New Task</h3>
+          <form id="taskForm">
+            <input type="hidden" id="taskIdField">
+            
+            <div class="form-group">
+              <label for="taskTitle">Task Title</label>
+              <input type="text" id="taskTitle" class="form-control" placeholder="What needs to be done?" required>
+              <div id="titleError" class="error-msg hidden">Title cannot be left blank.</div>
             </div>
 
-            <!-- Right Dashboard Tasks Section -->
-            <div class="dashboard-panel">
-                <div class="filter-bar">
-                    <div class="status-tabs">
-                        <button data-status-filter="all" class="tab-btn active">All</button>
-                        <button data-status-filter="pending" class="tab-btn">Pending</button>
-                        <button data-status-filter="completed" class="tab-btn">Completed</button>
-                    </div>
-                    <select id="filter-category-select" class="filter-select">
-                        <option value="all">All Categories</option>
-                        <option value="Work">Work</option>
-                        <option value="Personal">Personal</option>
-                        <option value="Study">Study</option>
-                        <option value="Health">Health</option>
-                        <option value="Finance">Finance</option>
-                    </select>
-                </div>
-
-                <!-- Live Dynamic Task Items Target Container -->
-                <ul id="task-list" class="task-list"></ul>
+            <div class="form-group">
+              <label for="taskCategory">Category</label>
+              <select id="taskCategory" class="form-control">
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Study">Study</option>
+                <option value="Health">Health</option>
+                <option value="Finance">Finance</option>
+              </select>
             </div>
-        </section>
-    </main>
 
-    <script type="module" src="script.js"></script>
+            <div class="form-group" id="assignmentGroup">
+              <label for="taskAssignment">Assign To Employee</label>
+              <select id="taskAssignment" class="form-control"></select>
+            </div>
+
+            <button type="submit" id="submitTaskBtn" class="btn-submit">Add Task</button>
+          </form>
+        </div>
+
+        <!-- Render Filtering Display Elements & Stack -->
+        <div>
+          <div class="card filter-bar">
+            <div class="filter-tabs" id="statusTabs">
+              <button class="tab-btn active" data-status="All">All</button>
+              <button class="tab-btn" data-status="Pending">Pending</button>
+              <button class="tab-btn" data-status="Completed">Completed</button>
+            </div>
+            
+            <div class="category-filter-wrapper">
+              <label for="filterCategory">Category:</label>
+              <select id="filterCategory" class="form-control category-select-compact">
+                <option value="All">All Categories</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Study">Study</option>
+                <option value="Health">Health</option>
+                <option value="Finance">Finance</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Task Output Stack -->
+          <ul id="taskList" class="task-list"></ul>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Main JavaScript App Context -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>
