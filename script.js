@@ -1,6 +1,4 @@
-// script.js
-import { AuthManager, USER_ROLES } from './auth.js';
-import { WorkspaceManager } from './task.js';
+// script.jsimport { AuthManager, USER_ROLES } from './auth.js';import { WorkspaceManager } from './task.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const workspace = new WorkspaceManager();
@@ -18,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const taskIdField = document.getElementById('taskIdField');
   const taskTitle = document.getElementById('taskTitle');
   const taskCategory = document.getElementById('taskCategory');
+  const taskDueDate = document.getElementById('taskDueDate');
   const taskAssignment = document.getElementById('taskAssignment');
   
   // Interface Toggles
@@ -37,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formTitle = document.getElementById('formTitle');
   const submitTaskBtn = document.getElementById('submitTaskBtn');
   const formCard = document.getElementById('formCard');
+  const enableNotificationsBtn = document.getElementById('enableNotificationsBtn');
   
   // Dynamic filter contexts
   const filterCategory = document.getElementById('filterCategory');
@@ -44,6 +44,28 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let currentStatusFilter = 'All';
   let isEditingMode = false;
+
+  // --- Push Notifications Engine ---
+  if (Notification.permission === 'granted') {
+    enableNotificationsBtn.classList.add('hidden');
+  }
+
+  enableNotificationsBtn.addEventListener('click', () => {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        enableNotificationsBtn.classList.add('hidden');
+        new Notification('Daily Drive Workspace', { body: 'System alerts enabled!' });
+      }
+    });
+  });
+
+  function sendTaskAlertNotification(title, worker) {
+    if (Notification.permission === 'granted') {
+      new Notification(' New Task Assigned', {
+        body: `Assigned to @${worker}: "${title}"`
+      });
+    }
+  }
 
   // --- Layout Screen Transitions ---
   goToRegister.addEventListener('click', () => {
@@ -74,31 +96,24 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       authScreen.classList.remove('hidden');
       workspaceScreen.classList.add('hidden');
-      loginCard.classList.remove('hidden');
-      registerCard.classList.add('hidden');
     }
   }
 
-   // script.js - Update this specific function inside your DOMContentLoaded event loop
-
-function setupFormAvailability(user) {
-  if (user.role === USER_ROLES.EMPLOYEE) {
-    formCard.classList.add('hidden');
-  } else {
-    formCard.classList.remove('hidden');
-    
-    // FIX: Use emp.username as the option value so it links perfectly to the employee account session
-    taskAssignment.innerHTML = AuthManager.getAllEmployees().map(emp => 
-      `<option value="${emp.username}">${emp.name} (@${emp.username})</option>`
-    ).join('');
+  function setupFormAvailability(user) {
+    if (user.role === USER_ROLES.EMPLOYEE) {
+      formCard.classList.add('hidden');
+    } else {
+      formCard.classList.remove('hidden');
+      taskAssignment.innerHTML = AuthManager.getAllEmployees().map(emp => 
+        <option value="${emp.username}">${emp.name}</option>
+      ).join('');
+    }
   }
-}
 
-  // --- Auth & Account Creation Handlers ---
+  // --- Auth Handlers ---
   loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     authError.classList.add('hidden');
-    
     try {
       AuthManager.login(
         document.getElementById('username').value,
@@ -116,7 +131,6 @@ function setupFormAvailability(user) {
     e.preventDefault();
     registerError.classList.add('hidden');
     registerSuccess.classList.add('hidden');
-
     try {
       AuthManager.register({
         name: document.getElementById('regName').value,
@@ -124,16 +138,11 @@ function setupFormAvailability(user) {
         password: document.getElementById('regPassword').value,
         role: document.getElementById('regRole').value
       });
-
       registerSuccess.classList.remove('hidden');
-      
-      // Delays briefly so user notices the success status indicator
       setTimeout(() => {
         registerCard.classList.add('hidden');
         loginCard.classList.remove('hidden');
-        loginForm.reset();
       }, 1000);
-
     } catch (err) {
       registerError.textContent = err.message;
       registerError.classList.remove('hidden');
@@ -159,6 +168,7 @@ function setupFormAvailability(user) {
     const taskPayload = {
       title: titleValue,
       category: taskCategory.value,
+      dueDate: taskDueDate.value,
       assignedTo: taskAssignment.value
     };
 
@@ -167,6 +177,7 @@ function setupFormAvailability(user) {
       exitEditingState();
     } else {
       workspace.addTask(taskPayload);
+      sendTaskAlertNotification(taskPayload.title, taskPayload.assignedTo);
     }
 
     taskForm.reset();
@@ -193,7 +204,7 @@ function setupFormAvailability(user) {
   });
 
   // --- View Rendering Logic Engine ---
-  function render() {
+   function render() {
     const currentUser = AuthManager.getCurrentUser();
     if (!currentUser) return;
 
@@ -223,6 +234,7 @@ function setupFormAvailability(user) {
             <div class="task-text">${task.title}</div>
             <div class="task-meta">
               <span class="category-tag">${task.category}</span>
+              <span style="margin-left: 10px; font-weight: bold; color: gray;"> Due: ${task.dueDate}</span>
             </div>
           </div>
         </div>
@@ -231,11 +243,31 @@ function setupFormAvailability(user) {
       taskList.appendChild(li);
     });
 
-    const score = workspace.calculateProgress(currentUser.id, currentUser.role === USER_ROLES.MANAGER);
+    const score = workspace.calculateProgress(currentUser.username, currentUser.role === USER_ROLES.MANAGER);
+    // FIX: Wrapped text securely inside backticks
     progressPercent.textContent = `${score}%`;
     progressBar.style.width = `${score}%`;
+
+    renderWeeklyAnalytics(currentUser);
   }
 
+  // UI RENDER: Pulls database distributions to dynamically resize graphics bars
+  function renderWeeklyAnalytics(user) {
+    const isManager = user.role === USER_ROLES.MANAGER;
+    const stats = workspace.getWeeklyHistoricalData(user.username, isManager);
+    const maxVal = Math.max(...Object.values(stats), 1);
+
+    Object.keys(stats).forEach(day => {
+      // FIX: Wrapped selector inside backticks
+      const bar = document.getElementById(`bar-${day}`);
+      if (bar) {
+        const percentageHeight = (stats[day] / maxVal) * 100;
+        // FIX: Wrapped dynamic styles inside backticks
+        bar.style.height = stats[day] > 0 ? `${Math.max(percentageHeight, 20)}%` : '0px';
+        bar.setAttribute('title', `${stats[day]} goals complete`);
+      }
+    });
+  }
   // --- Task Operations Routing Element ---
   taskList.addEventListener('click', (e) => {
     const id = e.target.dataset.id;
@@ -256,16 +288,18 @@ function setupFormAvailability(user) {
       const targetTask = workspace.tasks.find(t => t.id === id);
       if (targetTask) {
         isEditingMode = true;
-        formTitle.textContent = 'Modify Workspace Task';
-        submitTaskBtn.textContent = 'Update Task';
-        taskIdField.value = targetTask.id;
-        taskTitle.value = targetTask.title;
-        taskCategory.value = targetTask.category;
-        taskAssignment.value = targetTask.assignedTo;
-        taskTitle.focus();
-      }
-    }
-  });
 
-  initSession();
+formTitle.textContent = 'Modify Workspace Task';
+submitTaskBtn.textContent = 'Update Task';
+taskIdField.value = targetTask.id;
+taskTitle.value = targetTask.title;
+taskCategory.value = targetTask.category;
+taskDueDate.value = targetTask.dueDate;
+taskAssignment.value = targetTask.assignedTo;
+taskTitle.focus();
+}
+}
 });
+initSession();
+});
+
