@@ -4,28 +4,68 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Daily Drive Workspace</title>
-            <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="styles.css">
 
-  </head>
+</head>
 <body>
 
   <div class="container">
     
-    <!-- AUTHENTICATION FORM SCREEN -->
-    <div id="authScreen" class="auth-card">
-      <h2>Daily Drive Login</h2>
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" class="form-control" placeholder="e.g. admin or john_dev" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" class="form-control" value="password123" required>
-        </div>
-        <button type="submit" class="btn-submit">Sign In</button>
-        <div id="authError" class="error-msg hidden"></div>
-      </form>
+    <!-- AUTHENTICATION CONTAINER WINDOW -->
+    <div id="authScreen">
+      
+      <!-- LOGIN VIEW -->
+      <div id="loginCard" class="auth-card">
+        <h2>Daily Drive Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" class="form-control" placeholder="e.g. admin or john_dev" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" class="form-control" value="password123" required>
+          </div>
+          <button type="submit" class="btn-submit">Sign In</button>
+          <div id="authError" class="error-msg hidden"></div>
+        </form>
+        <p style="margin-top: 15px; text-align: center; font-size: 14px;">
+          Need an account? <span id="goToRegister" style="color: blue; cursor: pointer; font-weight: bold;">Sign Up here</span>
+        </p>
+      </div>
+
+      <!-- REGISTRATION VIEW -->
+      <div id="registerCard" class="auth-card hidden">
+        <h2>Create Account</h2>
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="regName">Full Name</label>
+            <input type="text" id="regName" class="form-control" placeholder="Your Name" required>
+          </div>
+          <div class="form-group">
+            <label for="regUsername">Choose Username</label>
+            <input type="text" id="regUsername" class="form-control" placeholder="Unique username" required>
+          </div>
+          <div class="form-group">
+            <label for="regPassword">Password</label>
+            <input type="password" id="regPassword" class="form-control" placeholder="Create password" required>
+          </div>
+          <div class="form-group">
+            <label for="regRole">Workspace Position / Role</label>
+            <select id="regRole" class="form-control">
+              <option value="Employee">Employee (View assigned tasks)</option>
+              <option value="Manager">Manager (Assign & control tasks)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-submit">Register Account</button>
+          <div id="registerError" class="error-msg hidden"></div>
+          <div id="registerSuccess" style="color: green; font-size: 13px; margin-top: 5px; font-weight: bold;" class="hidden">Account created! Redirecting...</div>
+        </form>
+        <p style="margin-top: 15px; text-align: center; font-size: 14px;">
+          Already have an account? <span id="goToLogin" style="color: blue; cursor: pointer; font-weight: bold;">Login here</span>
+        </p>
+      </div>
+
     </div>
 
     <!-- MAIN APP INTERFACE SCREEN -->
@@ -54,7 +94,7 @@
       <!-- Core Engine Layout Split Grid -->
       <div class="workspace-grid">
         
-        <!-- Input Form Section (Managed via role accessibility parameters) -->
+        <!-- Input Form Section -->
         <div class="card" id="formCard">
           <h3 id="formTitle" class="form-group">Create New Task</h3>
           <form id="taskForm">
@@ -118,7 +158,6 @@
 
   </div>
 
-  <!-- Main JavaScript App Context -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
