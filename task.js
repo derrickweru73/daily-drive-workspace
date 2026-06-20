@@ -1,29 +1,23 @@
-//task.js
-//task.js
+// task.js
+
 export class Task {
-  constructor({ id = null, title, category, assignedTo, dueDate, completed = false, completedAt = null }) {
-    // FIX: Backticks wrapped around the entire string template here
+  constructor({ id = null, title, category, assignedTo, completed = false }) {
     this.id = id || `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     this.title = title;
-    this.category = category;
-    this.assignedTo = assignedTo;
-    // FIX: Clean split layout index definition array
-    this.dueDate = dueDate || new Date().toISOString().split('T')[0];
+    this.category = category; 
+    this.assignedTo = assignedTo; // Links explicitly to the employee's username string
     this.completed = completed;
-    this.completedAt = completedAt;
   }
 
   toggleStatus() {
     this.completed = !this.completed;
-    this.completedAt = this.completed ? Date.now() : null;
   }
 
   update(updatedFields) {
-    const { title, category, assignedTo, dueDate } = updatedFields;
+    const { title, category, assignedTo } = updatedFields;
     if (title) this.title = title;
     if (category) this.category = category;
     if (assignedTo) this.assignedTo = assignedTo;
-    if (dueDate) this.dueDate = dueDate;
   }
 }
 
@@ -57,20 +51,30 @@ export class WorkspaceManager {
     return task;
   }
 
+  // FIXED LINE: Encapsulates state updates and forces data storage persistence 
+  toggleTaskStatus(taskId) {
+    const task = this.tasks.find(t => t.id === taskId);
+    if (task) {
+      task.toggleStatus();
+      this.saveToStorage();
+    }
+    return task;
+  }
+
   getTasksForUser(user) {
     if (user.role === 'Manager') {
       return this.tasks;
     }
+    // Isolates tasks strictly matching the logged-in employee's username
     return this.tasks.filter(task => 
-      task.assignedTo === user.id || 
-      (task.assignedTo && task.assignedTo.toLowerCase() === user.username.toLowerCase())
+      task.assignedTo && task.assignedTo.toLowerCase() === user.username.toLowerCase()
     );
   }
 
-  calculateProgress(userId = null, isManager = false) {
+  calculateProgress(username = null, isManager = false) {
     const targetTasks = isManager 
       ? this.tasks 
-      : this.tasks.filter(t => t.assignedTo === userId || (t.assignedTo && t.assignedTo.toLowerCase() === userId.toLowerCase()));
+      : this.tasks.filter(t => t.assignedTo && t.assignedTo.toLowerCase() === username.toLowerCase());
 
     if (targetTasks.length === 0) return 0;
 
@@ -79,27 +83,6 @@ export class WorkspaceManager {
     }, 0);
 
     return Math.round((completedCount / targetTasks.length) * 100);
-  }
-
-  // CORE CALCULATION: Compiles task counts per day for graph layout
-  getWeeklyHistoricalData(userId = null, isManager = false) {
-    const targetTasks = isManager 
-      ? this.tasks 
-      : this.tasks.filter(t => t.assignedTo === userId || (t.assignedTo && t.assignedTo.toLowerCase() === userId.toLowerCase()));
-
-    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const distribution = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
-
-    targetTasks.forEach(task => {
-      if (task.completed && task.completedAt) {
-        const dayName = weekDays[new Date(task.completedAt).getDay()];
-        if (distribution[dayName] !== undefined) {
-          distribution[dayName]++;
-        }
-      }
-    });
-
-    return distribution;
   }
 
   filterAndSortTasks({ user, category, status }) {
@@ -115,10 +98,9 @@ export class WorkspaceManager {
       filtered = filtered.filter(t => t.completed);
     }
 
-    // Sort: Uncompleted calendar goals go to the top, sorted by nearest expiration timeline
     return [...filtered].sort((a, b) => {
-      if (a.completed !== b.completed) return a.completed ? 1 : -1;
-      return new Date(a.dueDate) - new Date(b.dueDate);
+      if (a.completed === b.completed) return 0;
+      return a.completed ? 1 : -1;
     });
   }
 

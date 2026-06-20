@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Daily Drive Workspace</title>
-             <link rel="stylesheet" href="style.css">
-
+  <link rel="stylesheet" href="style.css">
+  <script>sessionStorage.clear(); localStorage.removeItem('dd_workspace_session');</script>    
 </head>
 <body>
 
@@ -13,6 +13,7 @@
     
     <!-- AUTHENTICATION CONTAINER WINDOW -->
     <div id="authScreen">
+      
       <!-- LOGIN VIEW -->
       <div id="loginCard" class="auth-card">
         <h2>Daily Drive Login</h2>
@@ -64,6 +65,7 @@
           Already have an account? <span id="goToLogin" style="color: blue; cursor: pointer; font-weight: bold;">Login here</span>
         </p>
       </div>
+
     </div>
 
     <!-- MAIN APP INTERFACE SCREEN -->
@@ -75,9 +77,21 @@
           <h1>Daily Drive Workspace</h1>
           <p>Welcome, <span id="userDisplay" class="user-badge"></span> (<span id="roleDisplay"></span>)</p>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <button id="enableNotificationsBtn" class="tab-btn"> Enable Alerts</button>
-          <button id="logoutBtn" class="btn-logout">Logout</button>
+        <button id="logoutBtn" class="btn-logout">Logout</button>
+      </div>
+
+      <!-- Developer Top Switch Bar Component -->
+      <div id="quickUserToggleBar" style="background: #2c3e50; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border-radius: 8px; margin-bottom: 20px; color: #fff; font-family: Arial, sans-serif; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 16px;">⚡</span>
+          <strong>Developer Fast Switch:</strong>
+          <span style="color: #bdc3c7;">Change roles instantly to test employee screen filters.</span>
+        </div>
+        <div>
+          <label for="devUserSelect" style="margin-right: 8px; font-weight: bold; color: #f1c40f;">Active Profile:</label>
+          <select id="devUserSelect" style="padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; cursor: pointer; color: #333; font-weight: bold; min-width: 180px;">
+            <!-- Options will be populated automatically -->
+          </select>
         </div>
       </div>
 
@@ -92,43 +106,9 @@
         </div>
       </div>
 
-      <!-- NEW FEATURE: WEEKLY PRODUCTIVITY GRAPH BAR PANEL -->
-      <div class="card" style="margin-bottom: 20px;">
-        <h3 class="form-group">Weekly Productivity Analytics</h3>
-        <div class="chart-container" style="display: flex; justify-content: space-around; align-items: flex-end; height: 120px; padding-top: 10px; border-bottom: 2px solid darkgray;">
-          <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-            <div id="bar-Mon" style="width: 100%; background: green; height: 0px; transition: height 0.4s ease; border-radius: 3px 3px 0 0;"></div>
-            <span style="font-size: 11px; margin-top: 5px; font-weight: bold;">Mon</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-            <div id="bar-Tue" style="width: 100%; background: green; height: 0px; transition: height 0.4s ease; border-radius: 3px 3px 0 0;"></div>
-            <span style="font-size: 11px; margin-top: 5px; font-weight: bold;">Tue</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-            <div id="bar-Wed" style="width: 100%; background: green; height: 0px; transition: height 0.4s ease; border-radius: 3px 3px 0 0;"></div>
-            <span style="font-size: 11px; margin-top: 5px; font-weight: bold;">Wed</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-            <div id="bar-Thu" style="width: 100%; background: green; height: 0px; transition: height 0.4s ease; border-radius: 3px 3px 0 0;"></div>
-            <span style="font-size: 11px; margin-top: 5px; font-weight: bold;">Thu</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-            <div id="bar-Fri" style="width: 100%; background: green; height: 0px; transition: height 0.4s ease; border-radius: 3px 3px 0 0;"></div>
-            <span style="font-size: 11px; margin-top: 5px; font-weight: bold;">Fri</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-            <div id="bar-Sat" style="width: 100%; background: green; height: 0px; transition: height 0.4s ease; border-radius: 3px 3px 0 0;"></div>
-            <span style="font-size: 11px; margin-top: 5px; font-weight: bold;">Sat</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-            <div id="bar-Sun" style="width: 100%; background: green; height: 0px; transition: height 0.4s ease; border-radius: 3px 3px 0 0;"></div>
-            <span style="font-size: 11px; margin-top: 5px; font-weight: bold;">Sun</span>
-          </div>
-        </div>
-      </div>
-
       <!-- Core Engine Layout Split Grid -->
       <div class="workspace-grid">
+        
         <!-- Input Form Section -->
         <div class="card" id="formCard">
           <h3 id="formTitle" class="form-group">Create New Task</h3>
@@ -150,12 +130,6 @@
                 <option value="Health">Health</option>
                 <option value="Finance">Finance</option>
               </select>
-            </div>
-
-            <!-- NEW FEATURE: DUE DATE CALENDAR SELECTOR -->
-            <div class="form-group">
-              <label for="taskDueDate">Due Date</label>
-              <input type="date" id="taskDueDate" class="form-control" required>
             </div>
 
             <div class="form-group" id="assignmentGroup">
@@ -192,8 +166,17 @@
           <!-- Dynamic Task Output Stack -->
           <ul id="taskList" class="task-list"></ul>
         </div>
+
       </div>
 
     </div>
+
   </div>
 
+  <!-- Primary Application Execution Scripts -->
+  <script type="module" src="script.js"></script>
+  <script type="module" src="toggle.js"></script>
+  <script type="module" src="addons.js"></script>
+ 
+</body>
+</html>

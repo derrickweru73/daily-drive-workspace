@@ -5,15 +5,12 @@ export const USER_ROLES = {
   EMPLOYEE: 'Employee'
 };
 
-// Default system baseline accounts
+// Only Admin is hardcoded by default now
 const DEFAULT_USERS = [
-  { id: 'u1', username: 'admin', password: 'password123', name: 'Derrick Weru', role: USER_ROLES.MANAGER },
-  { id: 'u2', username: 'john_dev', password: 'password123', name: 'John Doe', role: USER_ROLES.EMPLOYEE },
-  { id: 'u3', username: 'jane_ux', password: 'password123', name: 'Jane Smith', role: USER_ROLES.EMPLOYEE }
+  { id: 'admin_root', username: 'admin', password: 'password123', name: 'Derrick Weru', role: USER_ROLES.MANAGER }
 ];
 
 export class AuthManager {
-  // Fetch existing users from local memory or load baseline users
   static getUsersDatabase() {
     const storedUsers = localStorage.getItem('dd_users_database');
     if (!storedUsers) {
@@ -25,8 +22,12 @@ export class AuthManager {
 
   static login(username, password) {
     const db = this.getUsersDatabase();
+    
+    // Clean up inputs by stripping spaces before matching
+    const cleanUsername = username.trim().toLowerCase();
+
     const user = db.find(
-      u => u.username.toLowerCase() === username.toLowerCase().trim() && u.password === password
+      u => u.username.toLowerCase() === cleanUsername && u.password === password
     );
 
     if (!user) {
@@ -47,7 +48,6 @@ export class AuthManager {
   static register({ name, username, password, role = USER_ROLES.EMPLOYEE }) {
     const db = this.getUsersDatabase();
     
-    // Form verification rules
     if (!name.trim() || !username.trim() || !password.trim()) {
       throw new Error('All registration fields are required.');
     }
@@ -61,7 +61,7 @@ export class AuthManager {
       id: `user_${Date.now()}`,
       name: name.trim(),
       username: username.toLowerCase().trim(),
-      password: password, // Simulated plain text for local storage workspace environment
+      password: password,
       role: role
     };
 
