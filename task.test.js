@@ -16,8 +16,7 @@ Object.defineProperty(global, 'localStorage', { value: localStorageMock });
 describe('Daily Drive Workspace Task Engine Validation Test Suite', () => {
   let workspace;
   const managerUser = { id: 'u1', name: 'Derrick', role: 'Manager' };
-  const employeeUser = { id: 'u2', name: 'John Doe', role: 'Employee' };
-
+ const employeeUser = { id: 'u2', username: 'u2', role: 'Employee' };
   beforeEach(() => {
     localStorage.clear();
     workspace = new WorkspaceManager();
