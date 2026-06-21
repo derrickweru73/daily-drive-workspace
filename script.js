@@ -231,8 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const score = workspace.calculateProgress(currentUser.username, currentUser.role === USER_ROLES.MANAGER);
-    progressPercent.textContent = `${score}%`;
-    progressBar.style.width = `${score}%`;
+    progressPercent.textContent = `${score}%`;// updating percentages  text lable visible on the screen
+    progressBar.style.width = `${score}%`;// resize the visual progress bar with element
   }
 
   taskList.addEventListener('click', (e) => {// watching for any click inside the task list area
