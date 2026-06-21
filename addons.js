@@ -1,15 +1,15 @@
 // addons.js
-import { AuthManager } from './auth.js';
+import { AuthManager } from './auth.js';// imports authentication manager module
 
-let isDarkModeInjected = false;
-let isCalendarInjected = false;
+let isDarkModeInjected = false;// tracks darkmode inj
+let isCalendarInjected = false; // calender injection
 
 function executeSafeAddonsEngine() {
-  const appWorkspace = document.getElementById('workspaceScreen');
+  const appWorkspace = document.getElementById('workspaceScreen'); // selects workspace element from dom
   
   if (!appWorkspace || appWorkspace.classList.contains('hidden')) {
-    isDarkModeInjected = false;
-    isCalendarInjected = false;
+    isDarkModeInjected = false;//reset datrkmode tracker variable
+    isCalendarInjected = false;//reset calenders
     return;
   }
 
@@ -17,12 +17,12 @@ function executeSafeAddonsEngine() {
   // MODULE 1: DARK MODE ENGINE (Text Colors Names)
   // ==========================================
   if (!isDarkModeInjected) {
-    const navbar = document.querySelector('.header-bar');
-    if (navbar) {
-      const toggleBtn = document.createElement('button');
-      toggleBtn.id = 'darkModeToggleBtn';
-      toggleBtn.textContent = '🌙 Dark Mode';
-      toggleBtn.style.cssText = `
+    const navbar = document.querySelector('.header-bar'); // locates header bar from DOM
+    if (navbar) { //verifies header bar elements exist
+      const toggleBtn = document.createElement('button'); //creates html button element
+      toggleBtn.id = 'darkModeToggleBtn';// assgns unique id button 
+      toggleBtn.textContent = '🌙 Dark Mode'; //visible button text label
+      toggleBtn.style.cssText = ` 
         background: #34495e; color: #fff; border: none; padding: 8px 12px; 
         border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 15px;
         font-size: 13px; transition: all 0.2s ease; font-family: Arial, sans-serif;

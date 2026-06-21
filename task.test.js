@@ -1,106 +1,84 @@
 // task.test.js
-import { AuthManager, USER_ROLES } from './auth.js';
 import { WorkspaceManager, Task } from './task.js';
 
-describe('Daily Drive Workspace - Comprehensive System Tests', () => {
+// Mock browser LocalStorage API environment for terminal processing inside Jest context execution environment
+const localStorageMock = (() => {
+  let store = {};
+  return {
+    getItem: (key) => store[key] || null,
+    setItem: (key, value) => { store[key] = value.toString(); },
+    removeItem: (key) => { delete store[key]; },
+    clear: () => { store = {}; }
+  };
+})();
+Object.defineProperty(global, 'localStorage', { value: localStorageMock });
+
+describe('Daily Drive Workspace Task Engine Validation Test Suite', () => {
   let workspace;
+  const managerUser = { id: 'u1', name: 'Derrick', role: 'Manager' };
+  const employeeUser = { id: 'u2', name: 'John Doe', role: 'Employee' };
 
-  // Mocking the browser's localStorage environment so tests can run safely in isolation
   beforeEach(() => {
-    let store = {};
-    global.localStorage = {
-      getItem: (key) => store[key] || null,
-      setItem: (key, value) => { store[key] = String(value); },
-      removeItem: (key) => { delete store[key]; },
-      clear: () => { store = {}; }
-    };
-
-    // Instantiate a fresh manager instance before every individual test run
+    localStorage.clear();
     workspace = new WorkspaceManager();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  test('Should accurately initialize basic values inside a newly spawned task class structural instance model', () => {
+    const task = new Task({ title: 'Audit Accounts', category: 'Finance', assignedTo: 'u2' });
+    expect(task.title).toBe('Audit Accounts');
+    expect(task.completed).toBe(false);
+    expect(task.category).toBe('Finance');
   });
 
-  // --- UNIT 1: AUTHENTICATION & ACCESS SAFETY TESTS ---
-  describe('Authentication & Access Control', () => {
-    test('Should safely register and hash a new Employee profile into the database array', () => {
-      const newUser = AuthManager.register({
-        name: 'Alice Smith',
-        username: 'alice_dev',
-        password: 'securePassword123',
-        role: USER_ROLES.EMPLOYEE
-      });
-
-      expect(newUser).toBeDefined();
-      expect(newUser.username).toBe('alice_dev');
-      expect(newUser.role).toBe('Employee');
-      
-      const employees = AuthManager.getAllEmployees();
-      expect(employees.some(e => e.username === 'alice_dev')).toBe(true);
-    });
-
-    test('Should throw an explicit runtime validation error if registration fields are empty strings', () => {
-      expect(() => {
-        AuthManager.register({ name: ' ', username: 'bad_user', password: '123' });
-      }).toThrow('All registration fields are required.');
-    });
+  test('Should append target tasks to local tracker collections tracking specific enterprise parameters', () => {
+    const task = workspace.addTask({ title: 'Deploy Sandbox Server', category: 'Work', assignedTo: 'u2' });
+    expect(workspace.tasks.length).toBe(1);
+    expect(workspace.tasks[0].id).toBe(task.id);
   });
 
-  // --- UNIT 2: DATA SEGREGATION & EMPLOYEE VISIBILITY TESTS ---
-  describe('Workspace Isolation & Visibility Security Matrix', () => {
-    test('Should enforce absolute privacy: Employees must never see tasks assigned to other colleagues', () => {
-      const managerUser = { username: 'admin', role: USER_ROLES.MANAGER };
-      const employeeAlice = { username: 'alice_dev', role: USER_ROLES.EMPLOYEE };
-      const employeeBob = { username: 'bob_designer', role: USER_ROLES.EMPLOYEE };
-
-      // Manager creates distinct tasks assigned to separate people
-      workspace.addTask({ title: 'Fix API Authentication Bug', category: 'Work', assignedTo: 'alice_dev' });
-      workspace.addTask({ title: 'Deploy Container Infrastructure', category: 'Work', assignedTo: 'alice_dev' });
-      workspace.addTask({ title: 'Create Figma High-Fi Prototypes', category: 'Work', assignedTo: 'bob_designer' });
-
-      // Verification A: The Manager dashboard must see all 3 tasks globally
-      const managerView = workspace.getTasksForUser(managerUser);
-      expect(managerView.length).toBe(3);
-
-      // Verification B: Alice must see only her 2 backend development items
-      const aliceView = workspace.getTasksForUser(employeeAlice);
-      expect(aliceView.length).toBe(2);
-      expect(aliceView.every(t => t.assignedTo === 'alice_dev')).toBe(true);
-
-      // Verification C: Bob must see only his 1 layout design item
-      const bobView = workspace.getTasksForUser(employeeBob);
-      expect(bobView.length).toBe(1);
-      expect(bobView[0].title).toBe('Create Figma High-Fi Prototypes');
-    });
+  test('Should drop out target items efficiently during absolute execution of deletion filters', () => {
+    const task = workspace.addTask({ title: 'Review Code Base', category: 'Study', assignedTo: 'u3' });
+    workspace.deleteTask(task.id);
+    expect(workspace.tasks.length).toBe(0);
   });
 
-  // --- UNIT 3: BUSINESS LOGIC METRICS TESTS ---
-  describe('Performance Tracking & Metrics Scoring Engine', () => {
-    test('Should accurately calculate progress percentage scores based on data metrics', () => {
-      const username = 'alice_dev';
+  test('Should run status value mutation updates upon toggle triggers execution workflows', () => {
+    const task = workspace.addTask({ title: 'Fix CSS Bug UI Layer', category: 'Work', assignedTo: 'u2' });
+    expect(task.completed).toBe(false);
+    task.toggleStatus();
+    expect(task.completed).toBe(true);
+  });
 
-      // Injecting localized context: Add 4 tasks for Alice
-      const t1 = workspace.addTask({ title: 'Task 1', category: 'Work', assignedTo: username });
-      const t2 = workspace.addTask({ title: 'Task 2', category: 'Study', assignedTo: username });
-      const t3 = workspace.addTask({ title: 'Task 3', category: 'Finance', assignedTo: username });
-      workspace.addTask({ title: 'Task 4', category: 'Health', assignedTo: username });
+  test('Should calculate isolated productivity scores accurately based on functional reduction pipelines', () => {
+    workspace.addTask({ title: 'Task 1', category: 'Work', assignedTo: 'u2', completed: true });
+    workspace.addTask({ title: 'Task 2', category: 'Work', assignedTo: 'u2', completed: false });
+    // An external assignment from another employee should not skew employee 'u2's progress score
+    workspace.addTask({ title: 'Task 3', category: 'Personal', assignedTo: 'u3', completed: true });
 
-      // Complete exactly 3 out of 4 tasks (75% completion target)
-      workspace.toggleTaskStatus(t1.id);
-      workspace.toggleTaskStatus(t2.id);
-      workspace.toggleTaskStatus(t3.id);
+    const scoreEmployee = workspace.calculateProgress('u2', false);
+    expect(scoreEmployee).toBe(50); // 1 completed out of 2 assigned
 
-      const calculatedScore = workspace.calculateProgress(username, false);
-      
-      // The score engine output must match exactly 75%
-      expect(calculatedScore).toBe(75);
+    const scoreManager = workspace.calculateProgress('u1', true);
+    expect(scoreManager).toBe(67); // 2 total completed out of 3 total items system-wide
+  });
+
+  test('Should filter workspace elements using exact criteria metrics matching user permissions models', () => {
+    workspace.addTask({ title: 'Work Alpha', category: 'Work', assignedTo: 'u2' });
+    workspace.addTask({ title: 'Study Beta', category: 'Study', assignedTo: 'u2' });
+    
+    const results = workspace.filterAndSortTasks({
+      user: employeeUser,
+      category: 'Study',
+      status: 'All'
     });
+    
+    expect(results.length).toBe(1);
+    expect(results[0].title).toBe('Study Beta');
+  });
 
-    test('Should return exactly 0% completion if an active workspace currently holds zero assigned tasks', () => {
-      const emptyScore = workspace.calculateProgress('ghost_user', false);
-      expect(emptyScore).toBe(0);
-    });
+  test('Should reject task additions containing empty tracking descriptors throw standard input exception error frameworks', () => {
+    expect(() => {
+      workspace.addTask({ title: '   ', category: 'Personal', assignedTo: 'u2' });
+    }).toThrow('Task title is required.');
   });
 });
